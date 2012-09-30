@@ -32,7 +32,6 @@ body, html {
 
 
 .selection-box-invalid, .selection-box {
-	background: url('/images/wood.png');
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -41,6 +40,10 @@ body, html {
 	user-select: none;
 	position: absolute;
 	border: 1px solid #fff;
+}
+
+.wood {
+	background: url('/images/wood.png');
 }
 
 .selection-box {
