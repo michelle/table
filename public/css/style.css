@@ -4,7 +4,8 @@ a img {border: none;} /* Gets rid of IE's blue borders */
 
 body, html {
 	background: url('/images/wood.png');
-	font-family: helvetica, arial;
+	font-family: 'Dosis', helvetica, arial;
+	font-size: 20px;
 }
 
 #map {
@@ -31,7 +32,7 @@ body, html {
 
 
 .selection-box-invalid, .selection-box {
-	background-color: #188e95;
+	background: url('/images/wood.png');
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -40,6 +41,10 @@ body, html {
 	user-select: none;
 	position: absolute;
 	border: 1px solid #fff;
+}
+
+.selection-box {
+	opacity: 0.75;
 }
 
 .selection-box-invalid {
@@ -52,7 +57,18 @@ body, html {
 }
 
 .selected {
-	background-color: #3fb9c1;
+	opacity: 1
+}
+
+
+#title {
+  font-size: 60px;
+  text-transform: uppercase;
+  text-shadow: 0px -5px 0px #000;
+  width: 600px;
+  color: #fff;
+  margin: 100px auto 0 auto;
+  position: relative;
 }
 
 .person {
@@ -81,7 +97,7 @@ body, html {
 	padding: 10px;
 	border-radius: 10px;
 	background-color: #f9f9f9;
-	margin: 100px auto;
+	margin: 0px auto 100px auto;
 	width: 604px;
 	border: 1px solid #c7c7c7;
 	border-top: 1px solid #fff;

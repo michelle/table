@@ -27,7 +27,7 @@ app.get('/add/:name', function(req, res) {
     { 'name': req.params.name },
     function(err, doc) {
       if (!doc) {
-        res.render('add', { data: doc });
+        res.render('add', { mapname: req.params.name, data: doc });
       } else {
         res.redirect('/');
       }
@@ -58,7 +58,7 @@ app.get('/map/:name', function(req, res) {
     function(err, doc) {
       if (doc) {
         console.log(doc);
-        res.render('map', { map: doc.data, people: doc.people });
+        res.render('map', { mapname: req.params.name, map: doc.data, people: doc.people });
       } else {
         res.redirect('/');
       }
@@ -79,7 +79,7 @@ app.get('/edit/:name', function(req, res) {
     { 'name': req.params.name },
     function(err, doc) {
       if (doc) {
-        res.render('edit', { map: doc.data, people: doc.people });
+        res.render('edit', { mapname: req.params.name, map: doc.data, people: doc.people });
       }
     }
   );
