@@ -2,7 +2,8 @@ var express = require('express');
 var fs = require('fs');
 var app =  express.createServer();
 var util = require('./util.js');
-var db = util.db
+var db = util.db;
+DEBUG = true;
 
 // Initialize main server
 app.use(express.bodyParser());
@@ -18,16 +19,29 @@ app.get('/', function(req, res){
 });
 
 // create on frontend, corresponding to name
-app.get('/initmap/:name', function(req, res) {
-  res.render('add');
+app.get('/add/:name', function(req, res) {
+  if (DEBUG) {
+    console.log(req.params.name);
+  }
+  db.collection('maps').findOne(
+    { 'name': req.params.name },
+    function(err, doc) {
+      if (!doc) {
+        res.render('add', { data: doc });
+      } else {
+        res.redirect('/');
+      }
+    }
+  );
 });
 
 // post a json of the coordinates to draw later.
-app.post('/initmap/:name', function(req, res) {
+app.post('/add/:name', function(req, res) {
   db.collection('maps').insert({
     'name': req.params.name,
     'secret': req.body.secret,
-    'data': req.body.data
+    'data': req.body.data,
+    'people': []
   }, function(err, doc) {
     console.log(doc);
     res.redirect('/map/' + req.params.name);
@@ -36,34 +50,46 @@ app.post('/initmap/:name', function(req, res) {
 
 // view a map.
 app.get('/map/:name', function(req, res) {
+  if (DEBUG) {
+    console.log(req.params.name);
+  }
   db.collection('maps').findOne(
     { 'name': req.params.name },
     function(err, doc) {
-      if (!err) {
-        res.render('map', { map: doc[0].data });
+      if (doc) {
+        console.log(doc);
+        res.render('map', { map: doc.data, people: doc.people });
+      } else {
+        res.redirect('/');
       }
     }
   );
 });
 
+/** people node format: { computer: randomgenhash, name: str,
+ * contact: { gchat, facebook, email, phone, other }, picture: url, x: num, y: num }
+ */
 // add a node.
 // use fb authentication eventually.
-app.get('/topsecretedit/:name', function(req, res) {
+app.get('/edit/:name', function(req, res) {
+  if (DEBUG) {
+    console.log(req.params.name);
+  }
   db.collection('maps').findOne(
     { 'name': req.params.name },
     function(err, doc) {
-      if (!err) {
-        res.render('edit', { map: doc[0].data });
+      if (doc) {
+        res.render('edit', { map: doc.data, people: doc.people });
       }
     }
   );
 });
 
 // saves added node.
-app.post('/topsecretedit/:name', function(req, res) {
+app.post('/edit/:name', function(req, res) {
   db.collection('maps').findAndModify(
     { 'name': req.params.name, 'secret': req.body.secret },
-    { 'data': req.body.data },
+    { 'people': req.body.people },
     function(err, doc) {
       console.log(err, doc);
       res.redirect('/map/' + req.params.name);

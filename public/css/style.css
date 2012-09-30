@@ -2,3 +2,100 @@ html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,pre,code,form,fields
 a {outline: none;} /* Gets rid of Firefox's dotted borders */
 a img {border: none;} /* Gets rid of IE's blue borders */
 
+body, html {
+	background: url('/images/wood.png');
+	font-family: helvetica, arial;
+}
+
+#map {
+	width: 600px;
+	height: 600px;
+	position: relative;
+	background: url('/images/grid.png');
+	border-bottom: 1px solid #93806a;
+	border-right: 1px solid #93806a;
+	border-top: 1px solid #c6b9aa;
+	border-left: 1px solid #c6b9aa;
+	border: 1px solid #c7c7c7;
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
+	border-radius: 10px;
+	cursor: crosshair;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+
+.selection-box-invalid, .selection-box {
+	background-color: #3ac7b8;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	position: absolute;
+	border: 1px solid #fff;
+}
+
+.selection-box-invalid {
+	background-color: #fff;
+}
+
+
+.selection-box:hover {
+	cursor: pointer;
+}
+
+.selected {
+	background-color: #6ee5d8;
+}
+
+#wrapper {
+	padding: 10px;
+	border-radius: 10px;
+	background-color: #f9f9f9;
+	margin: 100px auto;
+	width: 604px;
+	border: 1px solid #c7c7c7;
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
+	position: relative;
+	text-align: center;
+}
+
+
+#save {
+	padding: 10px;
+	text-transform: uppercase;
+	border: 0;
+	border-radius: 5px;
+	color: #fff;
+	margin-top: 10px;
+	background-color: #454545;
+	border: 1px solid #000;
+	border-top: 1px solid #555;
+	text-shadow: 0px 2px 0px #000;
+	border-left: 1px solid #555;
+}
+
+
+#secret {
+	padding: 10px;
+	border: 1px solid #e0e0e0;;
+	margin-top: 10px;
+	border-radius: 5px;
+}
+
+#secret:focus {
+	outline: none;
+	background-color: #fffee7;
+}
+
+#secret:hover {
+	background-color: #fffee7;
+}
