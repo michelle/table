@@ -89,7 +89,8 @@ app.get('/edit/:name', function(req, res) {
 app.post('/edit/:name', function(req, res) {
   db.collection('maps').findAndModify(
     { 'name': req.params.name, 'secret': req.body.secret },
-    { 'people': req.body.people },
+    {},
+    { $set: { 'people': req.body.people } },
     function(err, doc) {
       console.log(err, doc);
       res.redirect('/map/' + req.params.name);

@@ -31,7 +31,7 @@ body, html {
 
 
 .selection-box-invalid, .selection-box {
-	background-color: #3ac7b8;
+	background-color: #188e95;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -52,7 +52,29 @@ body, html {
 }
 
 .selected {
-	background-color: #6ee5d8;
+	background-color: #3fb9c1;
+}
+
+.person {
+	background-color: #ddd;
+	width: 20px;
+	border: 1px solid #fff;
+	position: absolute;
+	height: 20px;
+	border-radius: 10px;
+}
+
+.myperson {
+	border: 1px solid #a90329;
+	background: #a90329; /* Old browsers */
+	background: -moz-linear-gradient(top,  #a90329 0%, #8f0222 44%, #6d0019 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#a90329), color-stop(44%,#8f0222), color-stop(100%,#6d0019)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #a90329 0%,#8f0222 44%,#6d0019 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #a90329 0%,#8f0222 44%,#6d0019 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #a90329 0%,#8f0222 44%,#6d0019 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #a90329 0%,#8f0222 44%,#6d0019 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a90329', endColorstr='#6d0019',GradientType=0 ); /* IE6-9 */
+
 }
 
 #wrapper {
@@ -69,6 +91,22 @@ body, html {
 }
 
 
+#name, #email, #pic, #information, #secret {
+	padding: 10px;
+	border: 1px solid #e0e0e0;;
+	margin-top: 10px;
+	border-radius: 5px;
+}
+
+input:focus {
+	outline: none;
+	background-color: #fffee7;
+}
+
+input:hover {
+	background-color: #fffee7;
+}
+
 #save {
 	padding: 10px;
 	text-transform: uppercase;
@@ -76,26 +114,27 @@ body, html {
 	border-radius: 5px;
 	color: #fff;
 	margin-top: 10px;
-	background-color: #454545;
-	border: 1px solid #000;
-	border-top: 1px solid #555;
-	text-shadow: 0px 2px 0px #000;
-	border-left: 1px solid #555;
+	background-color: #a13f3f;
+	border: 1px solid #841818;
+	border-top: 1px solid #c54c4c;
+	cursor: pointer;
+	text-shadow: 0px 2px 0px #841818;
+	border-left: 1px solid #c54c4c;
+	width: 230px;
 }
 
-
-#secret {
+#save:hover {
 	padding: 10px;
-	border: 1px solid #e0e0e0;;
-	margin-top: 10px;
+	text-transform: uppercase;
+	border: 0;
+	cursor: pointer;
 	border-radius: 5px;
+	color: #fff;
+	margin-top: 10px;
+	background-color: #a13f3f;
+	border: 1px solid #c54c4c;
+	border-top: 1px solid #841818;
+	text-shadow: 0px 2px 0px #841818;
+	border-left: 1px solid #841818;
 }
 
-#secret:focus {
-	outline: none;
-	background-color: #fffee7;
-}
-
-#secret:hover {
-	background-color: #fffee7;
-}
