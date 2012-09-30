@@ -1,6 +1,6 @@
 {
   "name": "table",
-  "version": "0.0.0",
+  "version": "0.0.0-1",
   "description": "maps out tables",
   "main": "server.js",
   "scripts": {
@@ -14,5 +14,9 @@
     "express": "~2.5.11",
     "mongoskin": "~0.4.4",
     "ejs": "~0.8.3"
+  },
+  "subdomain": "table",
+  "engines": {
+    "node": "0.8.x"
   }
 }
