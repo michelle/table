@@ -1,0 +1,56 @@
+<script src="/js/jquery.min.js"></script>
+<script>
+$(window).load(function() {
+  var tables = <%-map%>;
+  var people = $.parseJSON('<%-people%>') || [];
+  
+  for (var i in tables) {
+    table = tables[i];
+    var t_el = $('<div>').addClass('selection-box-invalid').css({
+      left: table.x,
+      top: table.y,
+      width: table.w,
+      height: table.h
+    });
+    $('#map').append(t_el);
+  }
+  for (var i in people) {
+    person = people[i];
+    var p_el = $('<div>').addClass('person myperson').attr('id', i).css({
+      left: person.x,
+      top: person.y,
+      width: person.w,
+      height: person.h
+    });
+    $('#map').append(p_el);
+  }
+  $('.myperson').click(function() {
+    $('.myperson').each(function() {
+      $(this).removeClass('selectedperson');
+    });
+    $(this).addClass('selectedperson');
+    var id = $(this).attr('id');
+    var current = people[id];
+    $('#name2').html(current.name);
+    $('#info2').html(current.info);
+    $('#email2').html(current.email);
+    $('#pic2').html('<img width="70px" src="'+current.picture+'">');
+  })
+});
+</script>
+
+<div id="title">
+<%=mapname%>
+</div>
+<div id="wrapper">
+<div id="map">
+
+</div>
+<div id="pic2"></div>
+<div id="details">
+  <strong>Name:</strong> <span id="name2"></span><br>
+  <strong>Information:</strong> <span id="info2"></span><br>
+  <strong>Email:</strong> <span id="email2"></span>
+</div>
+<div class="clear"></div>
+</div>
