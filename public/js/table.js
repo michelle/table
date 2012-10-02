@@ -16,7 +16,7 @@ $(function() {
         var click_x = e.pageX;
 	    var $selection = $('<div>').addClass('selection-box wood').mousedown(function(e) {
 			e.stopPropagation();
-			$('.selection-box .wood').each(function() { $(this).removeClass('selected'); })
+			$('.selection-box').each(function() { $(this).removeClass('selected'); })
 			$(this).addClass('selected');
 			var diff_x = e.pageX - $(this).offset().left;
 			var diff_y = e.pageY - $(this).offset().top;
