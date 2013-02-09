@@ -37,6 +37,7 @@ app.get('/add/:name', function(req, res) {
 
 // post a json of the coordinates to draw later.
 app.post('/add/:name', function(req, res) {
+  console.log(req.body.data);
   db.collection('maps').insert({
     'name': req.params.name,
     'secret': req.body.secret,

@@ -83,11 +83,11 @@ $(function() {
 
     });
 	$('#save').on('click', function() {
-		var count = $('.selection-box .wood').length;
-		$('.selection-box .wood').each(function(el) {
+		var count = $('.selection-box').length;
+		$('.selection-box').each(function(el) {
 			add($(this).position().left, $(this).position().top, $(this).width(), $(this).height());
 			if (!--count) {
-				console.log(tables);
+				console.log(JSON.stringify(tables));
 		  		$('#mapdata').val(JSON.stringify(tables));
 			}
 		})
