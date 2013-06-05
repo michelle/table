@@ -27,8 +27,19 @@ var Scale = {
   },
 
   fitScale: function(w, h) {
-    // TODO
-    return 0.5;
+    var proportion = w / h;
+    var _w = $(window).width();
+    var _h = $(window).height();
+    var _proportion = _w / _h;
+
+    if (proportion >= _proportion) {
+      // Align left/right.
+      return _w / w;
+
+    } else {
+      // Align top/bottom.
+      return _h / h;
+    }
   },
 
   display: function(type) {
