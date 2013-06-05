@@ -1,3 +1,18 @@
+function Table($el) {
+  this.$el = $el;
+}
+
+Table.prototype.toJSON = function() {
+  return {
+    x: $el.offsetLeft,
+    y: $el.offsetTop,
+    width: $el.offsetWidth,
+    height: $el.offsetHeight
+  };
+}
+
+
+
 tables = [];
 
 /** Table: { x: ?, y: ?, w: ?, h: ? } */
