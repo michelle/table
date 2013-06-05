@@ -11,8 +11,19 @@ var Scale = {
   },
 
   fullScale: function(w, h) {
-    // TODO
-    return 2;
+    var proportion = w / h;
+    var _w = $(window).width();
+    var _h = $(window).height();
+    var _proportion = _w / _h;
+
+    if (proportion <= _proportion) {
+      // Align left/right.
+      return _w / w;
+
+    } else {
+      // Align top/bottom.
+      return _h / h;
+    }
   },
 
   fitScale: function(w, h) {
@@ -139,7 +150,7 @@ $(document).ready(function() {
   // Dummy data.
   var dummy = {
     name: 'Tester',
-    tables: [{x:50, y:50, width:30, height:30, color:'red'}, {x:100,y:150,width:100,height:20,color:'blue'}],
+    tables: [{x:50, y:50, width:30, height:30, color:'red'}, {x:100,y:150,width:400,height:350,color:'blue'}],
     width: 500,
     height: 500
   }
