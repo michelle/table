@@ -26,7 +26,7 @@ var Scale = {
     }
   },
 
-  fitScale: function(w, h) {
+  fitScale: function(w, h, border) {
     var proportion = w / h;
     var _w = $(window).width();
     var _h = $(window).height();
@@ -34,10 +34,13 @@ var Scale = {
 
     if (proportion >= _proportion) {
       // Align left/right.
+      // TODO: account for equiv borders
+      _w -= 2 * border;
       return _w / w;
 
     } else {
       // Align top/bottom.
+      _h -= 2 * border;
       return _h / h;
     }
   },
@@ -139,8 +142,8 @@ Map.prototype.saveTables = function() {
     var offset = $(el).offset();
 
     self.tables.push({
-      x: offset.left,
-      y: offset.top,
+      x: offset.left - self.offset.left,
+      y: offset.top - self.offset.top,
       width: $(el).width(),
       height: $(el).height(),
       color: $(el).css('backgroundColor')
