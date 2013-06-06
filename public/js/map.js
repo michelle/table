@@ -1,4 +1,4 @@
-// TODO(stretch): support shaped maps.
+// TODO(stretch): support non-rectangular maps.
 var Scale = {
   getMapScale: function(type, w, h) {
     if (type === 'fullscreen') {
@@ -31,7 +31,6 @@ var Scale = {
     var _w = $(window).width() - 2 * border;
     var _h = $(window).height() - 2 * border;
     var _proportion = _w / _h;
-    console.log(_w,_h);
 
     if (proportion >= _proportion) {
       // Align left/right.
@@ -62,13 +61,16 @@ var Scale = {
 
 }
 
+// Base map already exists.
 function Map(/* add | create | edit | view */ type, map) {
   this.name = map.name;
   this.tables = map.tables || [];
   this.scale = Scale.getMapScale(Scale.display(type), map.width, map.height);
 
   this.$container = $('.map-' + type);
-  this.offset = this.$container.offset();
+  // TODO: consider if margin: 0 auto is wanted to display map.
+  // TODO: consider if borders around tables.
+  this.offset = map.offset;
   this.type = type;
 
   // Don't save unnecessary changes.
@@ -89,14 +91,76 @@ Map.prototype.initializeDOM = function() {
     $(window).on('keyup', function(e) {
       var kc = e.keyCode || e.which;
       if (kc === 8) {
-        $('.selected').remove();
+        self.deleteSelected();
         e.preventDefault();
       }
     });
 
+
+    this.creating = true;
+    this.mousedown = false;
+    // Click x, y position.
+    var cx = 0,
+        cy = 0;
+
     this.$container.on('mousedown', function(e) {
-      var x = e.pageX;
-      var y = e.pageY;
+      cx = e.pageX;
+      cy = e.pageY;
+
+      var $table = $('<div></div>').addClass('table');
+      self.addTableHandlers($table);
+      self.setSelected($table);
+      self.mousedown = true;
+
+      $table.css({
+        left: cx - self.offset.left,
+        top: cy - self.offset.top
+      });
+      self.$container.append($table);
+
+    }).on('mousemove', function(e) {
+      if (!self.mousedown) {
+        return;
+      }
+
+      var mx = e.pageX,
+          my = e.pageY;
+
+      if (!self.creating) {
+
+        if (false) {
+          self.$selection.css({
+            left: mx,
+            top: my
+          });
+        } else {
+          self.$container.mouseup();
+        }
+
+      } else {
+
+        var width = Math.abs(cx - mx),
+            height = Math.abs(cy - my);
+
+        self.$selected.css({
+          width: width,
+          height: height
+        });
+
+        if (mx < cx) { // mouse moving left.
+          self.$selected.css({
+            left: cx - self.offset.left - width
+          });
+        }
+        if (my < cy) { // mouse moving up.
+          self.$selected.css({
+            top: cy - self.offset.top - height
+          });
+        }
+
+      }
+    }).on('mouseup', function(e) {
+      self.mousedown = false;
     });
 
   }
@@ -105,6 +169,23 @@ Map.prototype.initializeDOM = function() {
   $('.save').click(function() {
     self.save();
   });
+};
+
+Map.prototype.setSelected = function($table) {
+  // TODO: handle multiple.
+  if (this.$selected) {
+    this.$selected.removeClass('selected');
+  }
+
+  this.$selected = $table;
+  this.$selected.addClass('selected');
+};
+
+Map.prototype.deleteSelection = function() {
+  // TODO: handle multiple.
+  if (this.$selected) {
+    this.$selected.remove();
+  }
 };
 
 Map.prototype.render = function() {
@@ -117,8 +198,24 @@ Map.prototype.render = function() {
       height: table.height * this.scale,
       backgroundColor: table.color
     });
+
+    // Make sure correct table is selected in edit mode.
+    if (this.type === 'edit') {
+      this.addTableHandlers($table);
+    }
     this.$container.append($table);
   }
+};
+
+Map.prototype.addTableHandlers = function($table) {
+  var self = this;
+  $table.on('mousedown', function(e) {
+    self.creating = false;
+    self.setSelected($table);
+    e.stopPropagation();
+  }).on('mouseup', function(e) {
+    self.creating = true;
+  });
 };
 
 Map.prototype.save = function() {
@@ -164,7 +261,8 @@ $(document).ready(function() {
     name: 'Tester',
     tables: [{x:50, y:50, width:30, height:30, color:'red'}, {x:100,y:150,width:400,height:350,color:'blue'}],
     width: 500,
-    height: 500
+    height: 500,
+    offset: { top: 100, left: 100 }
   }
-  new Map('view', dummy);
+  new Map('create', dummy);
 });
