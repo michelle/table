@@ -66,6 +66,8 @@ function Map(/* add | create | edit | view */ type, map) {
   this.name = map.name;
   this.tables = map.tables || [];
   this.scale = Scale.getMapScale(Scale.display(type), map.width, map.height);
+  this.width = map.width;
+  this.height = map.height;
 
   this.$container = $('.map-' + type);
   // TODO: consider if margin: 0 auto is wanted to display map.
@@ -86,8 +88,8 @@ Map.prototype.initializeDOM = function() {
   console.log('Initialize DOM handlers');
   var self = this;
 
-  // Backspace removes selected table in create/edit modes.
   if (['create', 'edit'].indexOf(this.type) !== -1) {
+    // Backspace removes selected table in create/edit modes.
     $(window).on('keyup', function(e) {
       var kc = e.keyCode || e.which;
       if (kc === 8) {
@@ -98,43 +100,62 @@ Map.prototype.initializeDOM = function() {
 
 
     this.creating = true;
-    this.mousedown = false;
-    // Click x, y position.
-    var cx = 0,
-        cy = 0;
+    var $table;
 
+    // Drawing.
     this.$container.on('mousedown', function(e) {
-      cx = e.pageX;
-      cy = e.pageY;
 
-      var $table = $('<div></div>').addClass('table');
+      $table = $('<div></div>').addClass('table');
       self.addTableHandlers($table);
-      self.setSelected($table);
-      self.mousedown = true;
+      self.mousedown = { x: e.pageX, y: e.pageY };
 
       $table.css({
-        left: cx - self.offset.left,
-        top: cy - self.offset.top
+        left: self.mousedown.x - self.offset.left,
+        top: self.mousedown.y - self.offset.top
       });
-      self.$container.append($table);
+    })
 
-    }).on('mousemove', function(e) {
+    $(window).on('mousemove', function(e) {
       if (!self.mousedown) {
         return;
       }
 
-      var mx = e.pageX,
-          my = e.pageY;
+      if ($table) {
+        self.$container.append($table);
+        self.setSelected($table);
+        $table = null;
+      }
+
+      var mx = e.pageX, // Current position.
+          my = e.pageY,
+          cx = self.mousedown.x, // Mousedown position.
+          cy = self.mousedown.y;
 
       if (!self.creating) {
 
-        if (false) {
-          self.$selection.css({
-            left: mx,
-            top: my
+        var dx = cx - self.selected_offset.left, // Left/top diffs.
+            dy = cy - self.selected_offset.top;
+
+        var left = mx - self.offset.left - dx,
+            top = my - self.offset.top - dy;
+
+        var table_width = self.$selected.width(),
+            table_height = self.$selected.height();
+
+        if (left >= 0
+            && top >= 0
+            && left + table_width <= self.width
+            && top + table_height <= self.height) {
+          self.$selected.css({
+            left: left,
+            top: top
           });
         } else {
-          self.$container.mouseup();
+          self.$selected.css({
+            left: Math.min(Math.max(0, left), self.width - table_width),
+            top: Math.min(Math.max(0, top), self.width - table_height)
+          });
+
         }
 
       } else {
@@ -142,25 +163,42 @@ Map.prototype.initializeDOM = function() {
         var width = Math.abs(cx - mx),
             height = Math.abs(cy - my);
 
+        if (mx < cx) { // mouse moving left.
+          var left = cx - self.offset.left - width;
+          if (left < 0) {
+            left = 0;
+            width = self.$selected.width();
+          }
+          self.$selected.css({
+            left: left
+          });
+        } else if (mx > self.offset.left + self.width) {
+          width = self.width - self.selected_offset.left + self.offset.left;
+        }
+
+        if (my < cy) { // mouse moving up.
+          var top = cy - self.offset.top - height;
+          if (top < 0) {
+            top = 0;
+            height = self.$selected.height();
+          }
+          self.$selected.css({
+            top: top
+          });
+        } else if (my > self.offset.top + self.height) {
+          height = self.height - self.selected_offset.top + self.offset.top;
+        }
+
         self.$selected.css({
           width: width,
           height: height
         });
 
-        if (mx < cx) { // mouse moving left.
-          self.$selected.css({
-            left: cx - self.offset.left - width
-          });
-        }
-        if (my < cy) { // mouse moving up.
-          self.$selected.css({
-            top: cy - self.offset.top - height
-          });
-        }
 
       }
     }).on('mouseup', function(e) {
-      self.mousedown = false;
+      self.creating = true;
+      delete self.mousedown;
     });
 
   }
@@ -179,9 +217,10 @@ Map.prototype.setSelected = function($table) {
 
   this.$selected = $table;
   this.$selected.addClass('selected');
+  this.selected_offset = this.$selected.offset();
 };
 
-Map.prototype.deleteSelection = function() {
+Map.prototype.deleteSelected = function() {
   // TODO: handle multiple.
   if (this.$selected) {
     this.$selected.remove();
@@ -200,7 +239,7 @@ Map.prototype.render = function() {
     });
 
     // Make sure correct table is selected in edit mode.
-    if (this.type === 'edit') {
+    if (['edit', 'create'].indexOf(this.type) !== -1) {
       this.addTableHandlers($table);
     }
     this.$container.append($table);
@@ -211,10 +250,9 @@ Map.prototype.addTableHandlers = function($table) {
   var self = this;
   $table.on('mousedown', function(e) {
     self.creating = false;
+    self.mousedown = { x: e.pageX, y: e.pageY };
     self.setSelected($table);
     e.stopPropagation();
-  }).on('mouseup', function(e) {
-    self.creating = true;
   });
 };
 
