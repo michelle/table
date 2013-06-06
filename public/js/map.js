@@ -2,18 +2,18 @@
 var Scale = {
   getMapScale: function(type, w, h) {
     if (type === 'fullscreen') {
-      return Scale.fullScale(w, h);
+      return Scale.fullScale(w, h, 0);
     } else if (type === 'fit') {
-      return Scale.fitScale(w, h);
+      return Scale.fitScale(w, h, 20);
     } else {
       return 1;
     }
   },
 
-  fullScale: function(w, h) {
+  fullScale: function(w, h, border) {
     var proportion = w / h;
-    var _w = $(window).width();
-    var _h = $(window).height();
+    var _w = $(window).width() - 2 * border;
+    var _h = $(window).height() - 2 * border;
     var _proportion = _w / _h;
 
     if (proportion <= _proportion) {
@@ -28,19 +28,17 @@ var Scale = {
 
   fitScale: function(w, h, border) {
     var proportion = w / h;
-    var _w = $(window).width();
-    var _h = $(window).height();
+    var _w = $(window).width() - 2 * border;
+    var _h = $(window).height() - 2 * border;
     var _proportion = _w / _h;
+    console.log(_w,_h);
 
     if (proportion >= _proportion) {
       // Align left/right.
-      // TODO: account for equiv borders
-      _w -= 2 * border;
       return _w / w;
 
     } else {
       // Align top/bottom.
-      _h -= 2 * border;
       return _h / h;
     }
   },
