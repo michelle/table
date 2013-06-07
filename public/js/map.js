@@ -1,75 +1,16 @@
 // TODO(stretch): support non-rectangular maps.
-var Scale = {
-  getMapScale: function(type, w, h) {
-    if (type === 'fullscreen') {
-      return Scale.fullScale(w, h, 0);
-    } else if (type === 'fit') {
-      return Scale.fitScale(w, h, 20);
-    } else {
-      return 1;
-    }
-  },
-
-  fullScale: function(w, h, border) {
-    var proportion = w / h;
-    var _w = $(window).width() - 2 * border;
-    var _h = $(window).height() - 2 * border;
-    var _proportion = _w / _h;
-
-    if (proportion <= _proportion) {
-      // Align left/right.
-      return _w / w;
-
-    } else {
-      // Align top/bottom.
-      return _h / h;
-    }
-  },
-
-  fitScale: function(w, h, border) {
-    var proportion = w / h;
-    var _w = $(window).width() - 2 * border;
-    var _h = $(window).height() - 2 * border;
-    var _proportion = _w / _h;
-
-    if (proportion >= _proportion) {
-      // Align left/right.
-      return _w / w;
-
-    } else {
-      // Align top/bottom.
-      return _h / h;
-    }
-  },
-
-  display: function(type) {
-    switch (type) {
-      case 'add':
-        // Map fits window.
-        return 'fit';
-      case 'edit':
-      case 'create':
-        // Appears as created.
-        return 'original';
-      case 'view':
-        // Window scrolls for map.
-        return 'fullscreen';
-      default:
-        return;
-    }
-  }
-
-}
-
 // TODO: create base map.
 // TODO: anchors for adjusting sizes.
 // TODO: change colors.
+// TODO: grid/snap to grid.
 function Map(/* add | create | edit | view */ type, map) {
   this.name = map.name;
   this.tables = map.tables || [];
+  this.points = map.points || [];
   this.scale = Scale.getMapScale(Scale.display(type), map.width, map.height);
   this.width = map.width;
   this.height = map.height;
+
 
   // Post updates to ID if available.
   this.id = map.id;
@@ -305,25 +246,3 @@ Map.prototype.toJSON = function() {
 Map.prototype.toJSONString = function() {
   return JSON.stringify(this.toJSON());
 };
-
-// Sample initialize.
-$(document).ready(function() {
-  // Dummy data.
-  //var type = 'view';
-  var type = 'create';
-  //var type = 'add';
-  //var type = 'edit';
-
-  var $el = $('.map-' + type);
-
-  var dummy = {
-    name: 'Tester',
-    tables: [{x:50, y:50, width:30, height:30, color:'red'}, {x:100,y:150,width:400,height:350,color:'blue'}],
-    width: $el.height(),
-    height: $el.width(),
-    offset: { top: $el.offset().top, left: $el.offset().left }
-  }
-
-  $el.show();
-  window.map = new Map(type, dummy);
-});

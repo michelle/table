@@ -11,7 +11,34 @@
     <link href="css/style.css" rel="stylesheet" type="text/css">
 
     <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/scale.js"></script>
     <script type="text/javascript" src="js/map.js"></script>
+    <script type="text/javascript" src="js/minimap.js"></script>
+    <script>
+
+      // Sample initialize.
+      $(document).ready(function() {
+        // Dummy data.
+        var type = 'view';
+        //var type = 'create';
+        //var type = 'add';
+        //var type = 'edit';
+
+        var $el = $('.map-' + type);
+
+        var dummy = {
+          name: 'Tester',
+          tables: [{x:50, y:50, width:30, height:30, color:'red'}, {x:100,y:150,width:400,height:350,color:'blue'}],
+          width: $el.height(),
+          height: $el.width(),
+          offset: { top: $el.offset().top, left: $el.offset().left }
+        }
+
+        $el.show();
+        window.map = new Map(type, dummy);
+      });
+
+    </script>
   </head>
 
   <body>
