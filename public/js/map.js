@@ -271,15 +271,15 @@ Map.prototype.saveTables = function() {
   this.tables = [];
 
   // TODO: labels.
-  $('.table').each(function(el) {
-    var offset = $(el).offset();
+  $('.table').each(function() {
+    var offset = $(this).offset();
 
     self.tables.push({
       x: offset.left - self.offset.left,
       y: offset.top - self.offset.top,
-      width: $(el).width(),
-      height: $(el).height(),
-      color: $(el).css('backgroundColor')
+      width: $(this).width(),
+      height: $(this).height(),
+      color: $(this).css('backgroundColor')
     });
   });
 
@@ -288,7 +288,6 @@ Map.prototype.saveTables = function() {
 };
 
 Map.prototype.savePoint = function() {
-
   // TODO: post.
 };
 
@@ -302,5 +301,5 @@ $(document).ready(function() {
     height: 500,
     offset: { top: 100, left: 100 }
   }
-  new Map('create', dummy);
+  window.map = new Map('create', dummy);
 });
