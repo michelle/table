@@ -3,6 +3,7 @@
 // TODO: anchors for adjusting sizes.
 // TODO: change colors.
 // TODO: grid/snap to grid.
+// TODO*: temporary 'Store' with localStorage.
 function Map(/* add | create | edit | view */ type, map) {
   this.name = map.name;
   this.tables = map.tables || [];
