@@ -80,9 +80,6 @@ function Map(/* add | create | edit | view */ type, map) {
   this.offset = map.offset;
   this.type = type;
 
-  // Don't save unnecessary changes.
-  this.changed = false;
-
   if (map.tables) {
     this.render();
   }
@@ -262,12 +259,10 @@ Map.prototype.addTableHandlers = function($table) {
 };
 
 Map.prototype.save = function() {
-  if (this.changed) {
-    if (['create', 'edit'].indexOf(this.type) !== -1) {
-      this.saveTables();
-    } else if (this.type === 'add') {
-      this.savePoint();
-    }
+  if (['create', 'edit'].indexOf(this.type) !== -1) {
+    this.saveTables();
+  } else if (this.type === 'add') {
+    this.savePoint();
   }
 };
 
