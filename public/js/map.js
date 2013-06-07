@@ -61,13 +61,18 @@ var Scale = {
 
 }
 
-// Base map already exists.
+// TODO: create base map.
+// TODO: anchors for adjusting sizes.
+// TODO: change colors.
 function Map(/* add | create | edit | view */ type, map) {
   this.name = map.name;
   this.tables = map.tables || [];
   this.scale = Scale.getMapScale(Scale.display(type), map.width, map.height);
   this.width = map.width;
   this.height = map.height;
+
+  // Post updates to ID if available.
+  this.id = map.id;
 
   this.$container = $('.map-' + type);
   // TODO: consider if margin: 0 auto is wanted to display map.
@@ -283,23 +288,47 @@ Map.prototype.saveTables = function() {
     });
   });
 
-  console.log('Updating tables', self.tables);
+  console.log(this.toJSONString());
   // TODO: post.
 };
 
+// Only point info should be posted.
 Map.prototype.savePoint = function() {
   // TODO: post.
+};
+
+Map.prototype.toJSON = function() {
+  return {
+    name: this.name,
+    tables: this.tables,
+    offset: this.offset,
+    width: this.width,
+    height: this.height
+  }
+};
+
+Map.prototype.toJSONString = function() {
+  return JSON.stringify(this.toJSON());
 };
 
 // Sample initialize.
 $(document).ready(function() {
   // Dummy data.
+  //var type = 'view';
+  var type = 'create';
+  //var type = 'add';
+  //var type = 'edit';
+
+  var $el = $('.map-' + type);
+
   var dummy = {
     name: 'Tester',
     tables: [{x:50, y:50, width:30, height:30, color:'red'}, {x:100,y:150,width:400,height:350,color:'blue'}],
-    width: 500,
-    height: 500,
-    offset: { top: 100, left: 100 }
+    width: $el.height(),
+    height: $el.width(),
+    offset: { top: $el.offset().top, left: $el.offset().left }
   }
-  window.map = new Map('create', dummy);
+
+  $el.show();
+  window.map = new Map(type, dummy);
 });
