@@ -1,5 +1,21 @@
-// TODO: jquery.minimap?
-function Minimap(tracked, options) {
+var util = {
+  // Support for basic selectors for purposes of raw DOM minimap.
+  getElementsBySelector: function(str) {
+    var is_class = str.split('.');
+    var class_name;
+    if ((class_name = is_class.pop()) && is_class.length) {
+      return ['class', class_name, document.getElementsByClassName(class_name)];
+    }
+    var is_id = str.split('#');
+    var id_name;
+    if ((id_name = is_id.pop()) && is_id.length) {
+      return ['id', id_name, document.getElementById(id_name)];
+    }
+    return ['tag', str, document.getElementsByTagName(str)];
+  }
+};
+
+function Minimap(tracked, container, options) {
   // Maps tracked elements to a list of their top, left, width, and height values.
   this.elements = {};
 
@@ -27,21 +43,21 @@ function Minimap(tracked, options) {
 
 // TODO: browser compatibility.
 // Find max x, y, and saves all dimensions.
-Minimap.prototype._extractElements = function(classes) {
-  for (var i = 0, ii = classes.length; i < ii; i += 1) {
-    var cl = classes[i];
-    var elements = document.getElementsByClassName(cl);
+Minimap.prototype._extractElements = function(identifiers) {
+  for (var i = 0, ii = identifiers.length; i < ii; i += 1) {
+    var identifier = identifiers[i];
+    var elements = document.getElementsByClassName(identifier);
     var extracted = [];
 
-    this.elements[cl] = extracted;
+    this.elements[identifier] = extracted;
 
     for (var j = 0, jj = elements.length; j < jj; j += 1) {
-      var element = elements[j];
+      var el = elements[j];
 
-      var left = element.offsetLeft,
-          top = element.offsetTop,
-          width = element.offsetWidth,
-          height = element.offsetHeight;
+      var left = el.offsetLeft,
+          top = el.offsetTop,
+          width = el.offsetWidth,
+          height = el.offsetHeight;
 
       this.mx = Math.max(left + width, this.mx);
       this.my = Math.max(top + height, this.my);
@@ -55,21 +71,6 @@ Minimap.prototype._extractElements = function(classes) {
     }
   }
 };
-
-// Resizes elements. <- do in same loop as render.
-/*Minimap.prototype._resizeElements = function() {
-  var classes = Object.keys(this.elements);
-  for (var i = 0, ii = classes.length; i < ii; i += 1) {
-    var elements = this.elements[classes[i]];
-    for (var j = 0, jj = elements.length; j < jj; j += 1) {
-      var element = elements[j];
-      element.left *= this.factor;
-      element.top *= this.factor;
-      element.width *= this.factor;
-      element.height *= this.factor;
-    }
-  }
-};*/
 
 // TODO: borders.
 // Ported from scale.js to use raw DOM.
@@ -95,24 +96,22 @@ Minimap.prototype._initializeScrollHandlers = function() {
 // TODO: better way to do raw dom nodes?
 Minimap.prototype.render = function() {
   var map = '';
-  var classes = Object.keys(this.elements);
-  for (var i = 0, ii = classes.length; i < ii; i += 1) {
-    var cl = classes[i]
-    var elements = this.elements[cl];
+  var identifiers = Object.keys(this.elements);
+  for (var i = 0, ii = identifiers.length; i < ii; i += 1) {
+    var identifier = identifiers[i]
+    var elements = this.elements[identifier];
     for (var j = 0, jj = elements.length; j < jj; j += 1) {
-      var element = elements[j];
-      element.left = Math.round(element.left * this.factor);
-      element.top = Math.round(element.top * this.factor);
-      element.width = Math.round(element.width * this.factor);
-      element.height = Math.round(element.height * this.factor);
+      var el = elements[j];
+      el.left = Math.round(el.left * this.factor);
+      el.top = Math.round(el.top * this.factor);
+      el.width = Math.round(el.width * this.factor);
+      el.height = Math.round(el.height * this.factor);
 
-      // TODO: sample stylesheet.
-      map += '<div class="_mini-el _mini-el-' + j + ' mini-' + cl;
-      map += '" style="left:' + element.left;
-      map += ';top:' + element.top;
-      map += ';width:' + element.width;
-      map += ';height:' + element.height;
-      map += ';position:absolute;"></div>'
+      var map = document.createElement('div');
+      map.setAttribute('class', '_mini-el _mini-el-' + j + ' mini-' + identifier);
+      map.setAttribute('style', 'left:' + el.left + ';top:' + el.top
+          + ';width:' + el.width + ';height:' + el.height
+          + ';position:absolute;');
     }
 
     return map;
