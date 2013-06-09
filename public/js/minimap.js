@@ -9,7 +9,7 @@ var util = {
     var is_id = str.split('#');
     var id_name;
     if ((id_name = is_id.pop()) && is_id.length) {
-      return ['id', id_name, document.getElementById(id_name)];
+      return ['id', id_name, [document.getElementById(id_name)]];
     }
     return ['tag', str, document.getElementsByTagName(str)];
   }
@@ -26,6 +26,9 @@ function Minimap(tracked, container, options) {
   // Multiplication factor.
   this.factor = 1;
 
+  // Save container.
+  this.container = util.getElementsBySelector(container)[2][0];
+
   // TODO: options, util extending fn.
   options = options || {};
   // Max width.
@@ -38,6 +41,7 @@ function Minimap(tracked, container, options) {
 
   this._initializeScrollHandlers();
 
+  this._render();
   // TODO: handlers for window resize, etc. How to best handle or not handle?
 };
 
@@ -46,10 +50,11 @@ function Minimap(tracked, container, options) {
 Minimap.prototype._extractElements = function(identifiers) {
   for (var i = 0, ii = identifiers.length; i < ii; i += 1) {
     var identifier = identifiers[i];
-    var elements = document.getElementsByClassName(identifier);
+    var elements = util.getElementsBySelector(identifier);
     var extracted = [];
 
-    this.elements[identifier] = extracted;
+    this.elements[elements[1]] = extracted;
+    elements = elements[2];
 
     for (var j = 0, jj = elements.length; j < jj; j += 1) {
       var el = elements[j];
@@ -93,9 +98,9 @@ Minimap.prototype._initializeScrollHandlers = function() {
 
 };
 
-// TODO: better way to do raw dom nodes?
-Minimap.prototype.render = function() {
-  var map = '';
+Minimap.prototype._render = function() {
+  var minimap = document.createElement('div');
+
   var identifiers = Object.keys(this.elements);
   for (var i = 0, ii = identifiers.length; i < ii; i += 1) {
     var identifier = identifiers[i]
@@ -107,13 +112,17 @@ Minimap.prototype.render = function() {
       el.width = Math.round(el.width * this.factor);
       el.height = Math.round(el.height * this.factor);
 
-      var map = document.createElement('div');
-      map.setAttribute('class', '_mini-el _mini-el-' + j + ' mini-' + identifier);
-      map.setAttribute('style', 'left:' + el.left + ';top:' + el.top
+      var landmark = document.createElement('div');
+      landmark.setAttribute('class', '_mini-el _mini-el-' + j + ' mini-' + identifier);
+      landmark.setAttribute('style', 'left:' + el.left + ';top:' + el.top
           + ';width:' + el.width + ';height:' + el.height
           + ';position:absolute;');
+      minimap.appendChild(landmark);
     }
-
-    return map;
   }
+
+  minimap.setAttribute('class', '_mini-wrap')
+  minimap.setAttribute('style', 'position:relative;');
+
+  this.container.appendChild(minimap);
 };
