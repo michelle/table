@@ -105,12 +105,25 @@ Minimap.prototype._calculateScale = function() {
 
   this.mx *= this.factor;
   this.my *= this.factor;
+
+  this.width *= this.factor;
+  this.height *= this.factor;
 };
 
 // TODO: onscroll or requestAnimationFrame check for scrollTop?
 // Detects scroll & changes active position on minimap.
 Minimap.prototype._initializeScrollHandlers = function() {
-
+  // window.scrollTo!
+  var self = this;
+  var styles = Minimap.STYLES[this.orientation];
+  this.timeout = setInterval(function() {
+    var axis = styles['axis'];
+    var push = (window['scroll' + axis] - self['s' + axis.toLowerCase()]) * self.factor;
+    self.indicator.setAttribute('style', styles['indicator'] + styles['push']
+      + ':' + push + ';' + styles['dimension'] + ':'
+      + self[styles['dimension']] + ';');
+    console.log(styles['dimension'])
+  }, 1000);
 };
 
 Minimap.prototype._render = function() {
@@ -129,7 +142,8 @@ Minimap.prototype._render = function() {
       el.height = Math.round(el.height * this.factor);
 
       var landmark = document.createElement('div');
-      landmark.setAttribute('class', '_mini-el _mini-el-' + j + ' mini-' + identifier);
+      landmark.setAttribute('class', 'minimap-element minimap-el-' + j
+          + ' mini-' + identifier);
       landmark.setAttribute('style', 'left:' + el.left + ';top:' + el.top
           + ';width:' + el.width + ';height:' + el.height
           + ';position:absolute;');
@@ -138,7 +152,7 @@ Minimap.prototype._render = function() {
   }
 
   // Minimap wrapper stylings.
-  minimap.setAttribute('class', '_mini-wrap')
+  minimap.setAttribute('class', 'minimap-wrapper')
   minimap.setAttribute('style', 'position:relative;width:' + this.mx
       + ';height:' + this.my + ';');
 
@@ -150,18 +164,30 @@ Minimap.prototype._render = function() {
 Minimap.prototype._addIndicators = function() {
   this.indicator = document.createElement('div');
 
-  this.indicator.setAttribute('class', '_mini-indicator');
+  this.indicator.setAttribute('class', 'minimap-indicator');
   this.indicator.setAttribute('style',
       Minimap.STYLES[this.orientation]['indicator']);
 
   this.minimap.appendChild(this.indicator);
 };
 
+// TODO: Clean up DOM and timeout.
+Minimap.prototype.remove = function() {
+  clearTimeout(this.timeout);
+
+};
+
 Minimap.STYLES = {
   default: {
-    indicator: 'position:absolute;left:0;right:0;' // Set height/top accordingly.
+    indicator: 'position:absolute;left:0;right:0;', // Set height/top accordingly.
+    push: 'top',
+    dimension: 'height',
+    axis: 'Y'
   },
   landscape: {
-    indicator: 'position:absolute:top:0;bottom:0;' // Set width/left accordingly.
+    indicator: 'position:absolute:top:0;bottom:0;', // Set width/left accordingly.
+    push: 'left',
+    dimension: 'width',
+    axis: 'X'
   }
-}
+};

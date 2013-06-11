@@ -16,3 +16,16 @@ a img {border: none;} /* Gets rid of IE's blue borders */
   position: absolute;
   background: rgba(0,0,0,0.4);
 }
+
+/** Minimap stuff. */
+.minimap-indicator {
+  background-color: yellow;
+  opacity: 0.5;
+}
+
+.minimap-wrapper {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.minimap-element {
+  background-color: rgba(0,0,0,0.1);
