@@ -23,6 +23,10 @@ function Minimap(tracked, container, options) {
   this.mx = 0;
   this.my = 0;
 
+  // Smallest x/y values, for purposes of auto-balancing..
+  this.sx = Number.MAX_VALUE;
+  this.sy = Number.MAX_VALUE;
+
   // Multiplication factor.
   this.factor = 1;
 
@@ -66,6 +70,8 @@ Minimap.prototype._extractElements = function(identifiers) {
 
       this.mx = Math.max(left + width, this.mx);
       this.my = Math.max(top + height, this.my);
+      this.sx = Math.min(left, this.sx);
+      this.sy = Math.min(top, this.sy);
 
       extracted.push({
         left: left,
@@ -75,6 +81,8 @@ Minimap.prototype._extractElements = function(identifiers) {
       });
     }
   }
+  this.mx -= this.sx;
+  this.my -= this.sy;
 };
 
 // TODO: borders.
@@ -101,14 +109,15 @@ Minimap.prototype._initializeScrollHandlers = function() {
 Minimap.prototype._render = function() {
   var minimap = document.createElement('div');
 
+  // Generate map landmarks.
   var identifiers = Object.keys(this.elements);
   for (var i = 0, ii = identifiers.length; i < ii; i += 1) {
     var identifier = identifiers[i]
     var elements = this.elements[identifier];
     for (var j = 0, jj = elements.length; j < jj; j += 1) {
       var el = elements[j];
-      el.left = Math.round(el.left * this.factor);
-      el.top = Math.round(el.top * this.factor);
+      el.left = Math.round((el.left - this.sx) * this.factor);
+      el.top = Math.round((el.top - this.sy) * this.factor);
       el.width = Math.round(el.width * this.factor);
       el.height = Math.round(el.height * this.factor);
 
@@ -121,8 +130,30 @@ Minimap.prototype._render = function() {
     }
   }
 
+  // Minimap wrapper stylings.
   minimap.setAttribute('class', '_mini-wrap')
   minimap.setAttribute('style', 'position:relative;');
 
   this.container.appendChild(minimap);
+  this._addIndicators();
+};
+
+Minimap.prototype._addIndicators = function() {
+  var highlight = document.createElement('div');
+  var track_top = document.createElement('div');
+  var track_bottom = document.createElement('div');
+
+  highlight.setAttribute('class', '_mini-highlight');
+  track_top.setAttribute('class', '_mini-track-top');
+  track_bottom.setAttribute('class', '_mini-track-bottom');
+
+  highlight.setAttribute('style', 'position:absolute;left:0;right:0');
+
+  this.indicators = document.createElement('div');
+  this.indicators.setAttribute('class', '_mini-indicators');
+  this.indicators.appendChild(highlight);
+  this.indicators.appendChild(track_top);
+  this.indicators.appendChild(track_bottom);
+
+  this.container.appendChild(this.indicators);
 };
