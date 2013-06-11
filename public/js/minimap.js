@@ -1,5 +1,5 @@
 var util = {
-  // Support for basic selectors for purposes of raw DOM minimap.
+  // Support for basic selectors for raw DOM minimap.
   getElementsBySelector: function(str) {
     var is_class = str.split('.');
     var class_name;
@@ -23,12 +23,15 @@ function Minimap(tracked, container, options) {
   this.mx = 0;
   this.my = 0;
 
-  // Smallest x/y values, for purposes of auto-balancing..
+  // Smallest x/y values, for balancing the minimap.
   this.sx = Number.MAX_VALUE;
   this.sy = Number.MAX_VALUE;
 
   // Multiplication factor.
   this.factor = 1;
+
+  // By default a vertical minimap.
+  this.orientation = 'default';
 
   // Save container.
   this.container = util.getElementsBySelector(container)[2][0];
@@ -97,7 +100,11 @@ Minimap.prototype._calculateScale = function() {
   } else {
     // Match width.
     this.factor = this.width / this.mx;
+    this.orientation = 'landscape';
   }
+
+  this.mx *= this.factor;
+  this.my *= this.factor;
 };
 
 // TODO: onscroll or requestAnimationFrame check for scrollTop?
@@ -132,28 +139,29 @@ Minimap.prototype._render = function() {
 
   // Minimap wrapper stylings.
   minimap.setAttribute('class', '_mini-wrap')
-  minimap.setAttribute('style', 'position:relative;');
+  minimap.setAttribute('style', 'position:relative;width:' + this.mx
+      + ';height:' + this.my + ';');
 
+  this.minimap = minimap;
   this.container.appendChild(minimap);
   this._addIndicators();
 };
 
 Minimap.prototype._addIndicators = function() {
-  var highlight = document.createElement('div');
-  var track_top = document.createElement('div');
-  var track_bottom = document.createElement('div');
+  this.indicator = document.createElement('div');
 
-  highlight.setAttribute('class', '_mini-highlight');
-  track_top.setAttribute('class', '_mini-track-top');
-  track_bottom.setAttribute('class', '_mini-track-bottom');
+  this.indicator.setAttribute('class', '_mini-indicator');
+  this.indicator.setAttribute('style',
+      Minimap.STYLES[this.orientation]['indicator']);
 
-  highlight.setAttribute('style', 'position:absolute;left:0;right:0');
-
-  this.indicators = document.createElement('div');
-  this.indicators.setAttribute('class', '_mini-indicators');
-  this.indicators.appendChild(highlight);
-  this.indicators.appendChild(track_top);
-  this.indicators.appendChild(track_bottom);
-
-  this.container.appendChild(this.indicators);
+  this.minimap.appendChild(this.indicator);
 };
+
+Minimap.STYLES = {
+  default: {
+    indicator: 'position:absolute;left:0;right:0;' // Set height/top accordingly.
+  },
+  landscape: {
+    indicator: 'position:absolute:top:0;bottom:0;' // Set width/left accordingly.
+  }
+}
