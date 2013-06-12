@@ -4,22 +4,15 @@ var util = {
   },
   configureUser: function(req) {
     req.session.user.gravatar = hash.md5(req.session.user.email);
-    if (req.session.user.type == 'free-plan') {
-      req.session.user.max_concurrent_limit = 50;
-      req.session.user.max_ip_limit = 50;
-    } else {
-      req.session.user.max_concurrent_limit = 100000;
-      req.session.user.max_ip_limit = 100000;
-    }
   },
   email: function(to, subject, message){
     email.sendMail({
       to: to,
-      from : 'PeerJS Team <team@peerjs.com>',
+      from : 'Table Team <michelle@michellebu.com>',
       subject : subject,
       html : message
     }, function(err, result){
-      if(err) console.log(err);
+      if (err) console.log(err);
     });
   }
 };
