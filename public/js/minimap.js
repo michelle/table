@@ -88,7 +88,6 @@ Minimap.prototype._extractElements = function(identifiers) {
   this.my -= this.sy;
 };
 
-// TODO: borders.
 // Ported from scale.js to use raw DOM.
 Minimap.prototype._calculateScale = function() {
   var proportion = this.mx / this.my;
@@ -110,7 +109,6 @@ Minimap.prototype._calculateScale = function() {
   this.height *= this.factor;
 };
 
-// TODO: onscroll or requestAnimationFrame check for scrollTop?
 // Detects scroll & changes active position on minimap.
 Minimap.prototype._initializeScrollHandlers = function() {
   // window.scrollTo!
