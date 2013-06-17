@@ -1,0 +1,57 @@
+<html lang="en">
+
+  <head>
+    <title>Map Prototype</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Language" content="en-us">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/scale.js"></script>
+    <script type="text/javascript" src="js/map.js"></script>
+    <script type="text/javascript" src="js/minimap.js"></script>
+    <script>
+
+      // Sample initialize.
+      $(document).ready(function() {
+        // Dummy data.
+        var type = 'view';
+        //var type = 'create';
+        //var type = 'add';
+        //var type = 'edit';
+
+        var $el = $('.map-' + type);
+
+        var dummy = {
+          name: 'Tester',
+          tables: [{x:50, y:50, width:30, height:30, color:'red'}, {x:100,y:150,width:400,height:350,color:'blue'}],
+          width: $el.height(),
+          height: $el.width(),
+          offset: { top: $el.offset().top, left: $el.offset().left }
+        }
+
+        $el.show();
+        window.map = new Map(type, dummy);
+
+        window.minimap = new Minimap(['.table'], '.minimap', { width: 200 });
+      });
+
+    </script>
+  </head>
+
+  <body>
+    <div class="map-create"></div>
+    <div class="map-view"></div>
+    <div class="map-edit"></div>
+    <div class="map-add"></div>
+
+    <div class="minimap"></div>
+
+    <div id="test"></div>
+  </body>
+
+</html>
