@@ -99,6 +99,9 @@ Minimap.prototype._calculateScale = function() {
   } else {
     // Match width.
     this.factor = this.width / this.mx;
+  }
+
+  if (this.mx > window.innerWidth) {
     this.orientation = 'landscape';
   }
 
@@ -117,10 +120,15 @@ Minimap.prototype._initializeScrollHandlers = function() {
   this.timeout = setInterval(function() {
     var axis = styles['axis'];
     var push = (window['scroll' + axis] - self['s' + axis.toLowerCase()]) * self.factor;
+    var size = self[styles['dimension']];
+    if (push < 0) {
+      size += push;
+      push = 0;
+    }
+
     self.indicator.setAttribute('style', styles['indicator'] + styles['push']
       + ':' + push + ';' + styles['dimension'] + ':'
-      + self[styles['dimension']] + ';');
-    console.log(styles['dimension'])
+      + size + ';');
   }, 1000);
 };
 

@@ -29,3 +29,10 @@ a img {border: none;} /* Gets rid of IE's blue borders */
 
 .minimap-element {
   background-color: rgba(0,0,0,0.1);
+}
+
+.minimap {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
