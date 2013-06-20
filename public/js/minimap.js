@@ -133,7 +133,7 @@ Minimap.prototype._initializeScrollHandlers = function() {
 };
 
 Minimap.prototype._render = function() {
-  var minimap = document.createElement('div');
+  this.minimap = document.createElement('div');
 
   // Generate map landmarks.
   var identifiers = Object.keys(this.elements);
@@ -142,10 +142,7 @@ Minimap.prototype._render = function() {
     var elements = this.elements[identifier];
     for (var j = 0, jj = elements.length; j < jj; j += 1) {
       var el = elements[j];
-      el.left = Math.round((el.left - this.sx) * this.factor);
-      el.top = Math.round((el.top - this.sy) * this.factor);
-      el.width = Math.round(el.width * this.factor);
-      el.height = Math.round(el.height * this.factor);
+      this._scaleElementProperties(el);
 
       var landmark = document.createElement('div');
       landmark.setAttribute('class', 'minimap-element minimap-el-' + j
@@ -153,18 +150,24 @@ Minimap.prototype._render = function() {
       landmark.setAttribute('style', 'left:' + el.left + ';top:' + el.top
           + ';width:' + el.width + ';height:' + el.height
           + ';position:absolute;');
-      minimap.appendChild(landmark);
+      this.minimap.appendChild(landmark);
     }
   }
 
   // Minimap wrapper stylings.
-  minimap.setAttribute('class', 'minimap-wrapper')
-  minimap.setAttribute('style', 'position:relative;width:' + this.mx
+  this.minimap.setAttribute('class', 'minimap-wrapper')
+  this.minimap.setAttribute('style', 'position:relative;width:' + this.mx
       + ';height:' + this.my + ';');
 
-  this.minimap = minimap;
-  this.container.appendChild(minimap);
+  this.container.appendChild(this.minimap);
   this._addIndicators();
+};
+
+Minimap.prototype._scaleElementProperties = function(el) {
+  el.left = Math.round((el.left - this.sx) * this.factor);
+  el.top = Math.round((el.top - this.sy) * this.factor);
+  el.width = Math.round(el.width * this.factor);
+  el.height = Math.round(el.height * this.factor);
 };
 
 Minimap.prototype._addIndicators = function() {
@@ -177,10 +180,9 @@ Minimap.prototype._addIndicators = function() {
   this.minimap.appendChild(this.indicator);
 };
 
-// TODO: Clean up DOM and timeout.
 Minimap.prototype.remove = function() {
   clearTimeout(this.timeout);
-
+  this.container.removeChild(this.minimap);
 };
 
 Minimap.STYLES = {
