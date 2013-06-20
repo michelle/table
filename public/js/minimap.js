@@ -42,11 +42,17 @@ function Minimap(tracked, container, options) {
   this.width = options.width ? Math.min(options.width, window.innerWidth) : window.innerWidth;
   // Max height.
   this.height = options.height ? Math.min(options.height, window.innerHeight) : window.innerHeight;
+  this.wait = options.wait || 500;
 
   this._extractElements(tracked);
   this._calculateScale();
 
   this._initializeScrollHandlers();
+
+  // Smart hide minimap (if no scroll, don't show.)
+  if (options.smart) {
+    this._setupSmartHide();
+  }
 
   this._render();
   // TODO: handlers for window resize, etc. How to best handle or not handle?
@@ -117,7 +123,7 @@ Minimap.prototype._initializeScrollHandlers = function() {
   // window.scrollTo!
   var self = this;
   var styles = Minimap.STYLES[this.orientation];
-  this.timeout = setInterval(function() {
+  this.interval = setInterval(function() {
     var axis = styles['axis'];
     var push = (window['scroll' + axis] - self['s' + axis.toLowerCase()]) * self.factor;
     var size = self[styles['dimension']];
@@ -129,7 +135,12 @@ Minimap.prototype._initializeScrollHandlers = function() {
     self.indicator.setAttribute('style', styles['indicator'] + styles['push']
       + ':' + push + ';' + styles['dimension'] + ':'
       + size + ';');
-  }, 1000);
+  }, this.wait);
+};
+
+// Hide minimap if not needed.
+Minimap.prototype._setupSmartHide = function() {
+  // TODO: perhaps on a timeout?
 };
 
 Minimap.prototype._render = function() {
@@ -181,7 +192,7 @@ Minimap.prototype._addIndicators = function() {
 };
 
 Minimap.prototype.remove = function() {
-  clearTimeout(this.timeout);
+  clearInterval(this.interval);
   this.container.removeChild(this.minimap);
 };
 
