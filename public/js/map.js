@@ -3,7 +3,53 @@
 // TODO: anchors for adjusting sizes.
 // TODO: change colors.
 // TODO: grid/snap to grid.
-// TODO*: temporary 'Store' with localStorage.
+
+// TODO: remove when writing server.
+function Store(collection) {
+  this.collection = collection;
+  this.entries = localStorage.getItem(collection);
+  if (this.entries) {
+    this._convertEntries();
+  } else {
+    this.entries = {};
+  }
+  return this;
+};
+
+Store.prototype._convertEntries = function() {
+  this.entries = JSON.parse(this.entries);
+  var converted = {};
+  for (var i = 0, ii = this.entries.length; i < ii; i += 1) {
+  }
+}
+
+// Random entry.
+Store.prototype.findOne = function() {
+
+
+};
+
+Store.prototype.find = function(properties) {
+
+};
+
+Store.prototype.findById = function(id) {
+  return this.find({ _id: id });
+};
+
+Store.prototype.insert = function(entry) {
+
+};
+
+Store.prototype.update = function(match, properties) {
+
+};
+
+Store.prototype.updateById = function(id, properties) {
+  this.update({ _id: id });
+};
+
+
 function Map(/* add | create | edit | view */ type, map) {
   this.name = map.name;
   this.tables = map.tables || [];
