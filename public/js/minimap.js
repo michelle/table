@@ -121,8 +121,8 @@ Minimap.prototype._calculateScale = function() {
   this.mx *= this.factor;
   this.my *= this.factor;
 
-  this.width *= this.factor;
-  this.height *= this.factor;
+  this.width = window.innerWidth * this.factor;
+  this.height = window.innerHeight * this.factor;
 };
 
 // Detects scroll & changes active position on minimap.
@@ -204,7 +204,10 @@ Minimap.prototype._addIndicators = function() {
 
 Minimap.prototype.remove = function() {
   clearInterval(this.interval);
-  this.container.removeChild(this.minimap);
+  if (this.minimap) {
+    this.container.removeChild(this.minimap);
+    this.minimap = null;
+  }
 };
 
 Minimap.prototype.calculate = function(width, height) {
@@ -245,7 +248,7 @@ Minimap.STYLES = {
     axis: 'Y'
   },
   landscape: {
-    indicator: 'position:absolute:top:0;bottom:0;', // Set width/left accordingly.
+    indicator: 'position:absolute;top:0;bottom:0;', // Set width/left accordingly.
     push: 'left',
     dimension: 'width',
     axis: 'X'
