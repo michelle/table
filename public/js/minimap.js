@@ -12,20 +12,29 @@ var util = {
       return ['id', id_name, [document.getElementById(id_name)]];
     }
     return ['tag', str, document.getElementsByTagName(str)];
-  }
+  },
+  extend: function(dest, source) {
+    for (var key in source) {
+      if (source.hasOwnProperty(key)) {
+        dest[key] = source[key];
+      }
+    }
+    return dest;
+  },
+  onFinalEvent: (function() {
+    var timers = {};
+    return function(cb, ms, id) {
+      if (timers[id]) {
+        clearTimeout(timers[id]);
+      }
+      timers[id] = setTimeout(cb, ms);
+    };
+  })()
 };
 
 function Minimap(tracked, container, options) {
   // Maps tracked elements to a list of their top, left, width, and height values.
   this.elements = {};
-
-  // Largest x/y (left/top) values.
-  this.mx = 0;
-  this.my = 0;
-
-  // Smallest x/y values, for balancing the minimap.
-  this.sx = Number.MAX_VALUE;
-  this.sy = Number.MAX_VALUE;
 
   // Multiplication factor.
   this.factor = 1;
@@ -37,32 +46,29 @@ function Minimap(tracked, container, options) {
   this.container = util.getElementsBySelector(container)[2][0];
 
   // TODO: options, util extending fn.
-  options = options || {};
-  // Max width.
-  this.width = options.width ? Math.min(options.width, window.innerWidth) : window.innerWidth;
-  // Max height.
-  this.height = options.height ? Math.min(options.height, window.innerHeight) : window.innerHeight;
-  this.wait = options.wait || 500;
+  this.options = util.extend({
+    wait: 500
+  }, options);
 
-  this._extractElements(tracked);
-  this._calculateScale();
+  this.tracked = tracked;
 
-  this._initializeScrollHandlers();
+  this.calculate(this.options.width, this.options.height);
 
   // Smart hide minimap (if no scroll, don't show.)
-  if (options.smart) {
+  if (this.options.smart) {
     this._setupSmartHide();
+    // TODO: to handle or not to handle?
+    this._setupSmartResize();
   }
 
-  this._render();
-  // TODO: handlers for window resize, etc. How to best handle or not handle?
+  this.render();
 };
 
 // TODO: browser compatibility.
 // Find max x, y, and saves all dimensions.
-Minimap.prototype._extractElements = function(identifiers) {
-  for (var i = 0, ii = identifiers.length; i < ii; i += 1) {
-    var identifier = identifiers[i];
+Minimap.prototype._extractElements = function() {
+  for (var i = 0, ii = this.tracked.length; i < ii; i += 1) {
+    var identifier = this.tracked[i];
     var elements = util.getElementsBySelector(identifier);
     var extracted = [];
 
@@ -135,7 +141,7 @@ Minimap.prototype._initializeScrollHandlers = function() {
     self.indicator.setAttribute('style', styles['indicator'] + styles['push']
       + ':' + push + ';' + styles['dimension'] + ':'
       + size + ';');
-  }, this.wait);
+  }, this.options.wait);
 };
 
 // Hide minimap if not needed.
@@ -143,7 +149,17 @@ Minimap.prototype._setupSmartHide = function() {
   // TODO: perhaps on a timeout?
 };
 
-Minimap.prototype._render = function() {
+// Resize minimap.
+Minimap.prototype._setupSmartResize = function() {
+  var self = this;
+  window.onresize = function() {
+    util.onFinalEvent(function() {
+      self.regenerate();
+    }, self.options.wait, 'smart_resize');
+  };
+};
+
+Minimap.prototype.render = function() {
   this.minimap = document.createElement('div');
 
   // Generate map landmarks.
@@ -194,6 +210,34 @@ Minimap.prototype._addIndicators = function() {
 Minimap.prototype.remove = function() {
   clearInterval(this.interval);
   this.container.removeChild(this.minimap);
+};
+
+Minimap.prototype.calculate = function(width, height) {
+  // Largest x/y (left/top) values.
+  this.mx = 0;
+  this.my = 0;
+
+  // Smallest x/y values, for balancing the minimap.
+  this.sx = Number.MAX_VALUE;
+  this.sy = Number.MAX_VALUE;
+
+  // Max width.
+  this.width = width ? Math.min(width, window.innerWidth) : window.innerWidth;
+  // Max height.
+  this.height = height ? Math.min(height, window.innerHeight) : window.innerHeight;
+
+  this._extractElements();
+  this._calculateScale();
+
+  this._initializeScrollHandlers();
+};
+
+Minimap.prototype.recalculate = Minimap.prototype.calculate;
+
+Minimap.prototype.regenerate = function() {
+  this.remove();
+  this.recalculate(this.options.width, this.options.height);
+  this.render();
 };
 
 Minimap.STYLES = {
