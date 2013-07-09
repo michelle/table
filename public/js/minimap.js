@@ -56,9 +56,8 @@ function Minimap(tracked, container, options) {
 
   // Smart hide minimap (if no scroll, don't show.)
   if (this.options.smart) {
-    this._setupSmartHide();
     // TODO: to handle or not to handle?
-    this._setupSmartResize();
+    this._setupSmartMinimap();
   }
 
   this.render();
@@ -115,6 +114,8 @@ Minimap.prototype._calculateScale = function() {
 
   if (this.mx > window.innerWidth) {
     this.orientation = 'landscape';
+  } else if (this.my < window.innerHeight) {
+    this.orientation = 'no-scroll';
   }
 
   this.mx *= this.factor;
@@ -144,18 +145,12 @@ Minimap.prototype._initializeScrollHandlers = function() {
   }, this.options.wait);
 };
 
-// Hide minimap if not needed.
-Minimap.prototype._setupSmartHide = function() {
-  // TODO: perhaps on a timeout?
-};
-
-// Resize minimap.
-Minimap.prototype._setupSmartResize = function() {
+Minimap.prototype._setupSmartMinimap = function() {
   var self = this;
   window.onresize = function() {
     util.onFinalEvent(function() {
       self.regenerate();
-    }, self.options.wait, 'smart_resize');
+    }, self.options.wait, 'smart_minimap');
   };
 };
 
@@ -237,7 +232,9 @@ Minimap.prototype.recalculate = Minimap.prototype.calculate;
 Minimap.prototype.regenerate = function() {
   this.remove();
   this.recalculate(this.options.width, this.options.height);
-  this.render();
+  if (!this.options.smart || this.orientation != 'no-scroll') {
+    this.render();
+  }
 };
 
 Minimap.STYLES = {
@@ -249,6 +246,13 @@ Minimap.STYLES = {
   },
   landscape: {
     indicator: 'position:absolute:top:0;bottom:0;', // Set width/left accordingly.
+    push: 'left',
+    dimension: 'width',
+    axis: 'X'
+  },
+  'no-scroll': {
+    indicator: 'display:none;',
+    // The rest don't matter.
     push: 'left',
     dimension: 'width',
     axis: 'X'
