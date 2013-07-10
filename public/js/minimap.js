@@ -126,7 +126,7 @@ Minimap.prototype._calculateScale = function() {
 };
 
 // Detects scroll & changes active position on minimap.
-Minimap.prototype._initializeScrollHandlers = function() {
+Minimap.prototype._initializeIntervalHandlers = function() {
   // window.scrollTo!
   var self = this;
   var styles = Minimap.STYLES[this.orientation];
@@ -182,7 +182,23 @@ Minimap.prototype.render = function() {
       + ';height:' + this.my + ';');
 
   this.container.appendChild(this.minimap);
+  this._minimapListen();
   this._addIndicators();
+};
+
+// Make minimap listen for clicks.
+Minimap.prototype._minimapListen = function() {
+  var self = this;
+  this.minimap.onclick = function(ev) {
+    if (self.orientation === 'landscape') {
+      var left = ev.offsetX / self.factor;
+      document.body.scrollLeft = left;
+    } else {
+      var top = ev.offsetY / self.factor;
+      console.log(ev, top, document.body)
+      document.body.scrollTop = top;
+    }
+  };
 };
 
 Minimap.prototype._scaleElementProperties = function(el) {
@@ -227,7 +243,7 @@ Minimap.prototype.calculate = function(width, height) {
   this._extractElements();
   this._calculateScale();
 
-  this._initializeScrollHandlers();
+  this._initializeIntervalHandlers();
 };
 
 Minimap.prototype.recalculate = Minimap.prototype.calculate;
