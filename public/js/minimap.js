@@ -191,11 +191,10 @@ Minimap.prototype._minimapListen = function() {
   var self = this;
   this.minimap.onclick = function(ev) {
     if (self.orientation === 'landscape') {
-      var left = ev.offsetX / self.factor;
+      var left = (ev.pageX - document.body.scrollLeft - self.minimap.offsetLeft) / self.factor;
       document.body.scrollLeft = left;
     } else {
-      var top = ev.offsetY / self.factor;
-      console.log(ev, top, document.body)
+      var top = (ev.pageY - document.body.scrollTop - self.minimap.offsetTop) / self.factor;
       document.body.scrollTop = top;
     }
   };
