@@ -4,52 +4,6 @@
 // TODO: change colors.
 // TODO: grid/snap to grid.
 
-// TODO: remove when writing server.
-function Store(collection) {
-  this.collection = collection;
-  this.entries = localStorage.getItem(collection);
-  if (this.entries) {
-    this._convertEntries();
-  } else {
-    this.entries = {};
-  }
-  return this;
-};
-
-Store.prototype._convertEntries = function() {
-  this.entries = JSON.parse(this.entries);
-  var converted = {};
-  for (var i = 0, ii = this.entries.length; i < ii; i += 1) {
-  }
-}
-
-// Random entry.
-Store.prototype.findOne = function() {
-
-
-};
-
-Store.prototype.find = function(properties) {
-
-};
-
-Store.prototype.findById = function(id) {
-  return this.find({ _id: id });
-};
-
-Store.prototype.insert = function(entry) {
-
-};
-
-Store.prototype.update = function(match, properties) {
-
-};
-
-Store.prototype.updateById = function(id, properties) {
-  this.update({ _id: id });
-};
-
-
 function Map(/* add | create | edit | view */ type, map) {
   this.name = map.name;
   this.tables = map.tables || [];
@@ -57,7 +11,6 @@ function Map(/* add | create | edit | view */ type, map) {
   this.scale = Scale.getMapScale(Scale.display(type), map.width, map.height);
   this.width = map.width;
   this.height = map.height;
-
 
   // Post updates to ID if available.
   this.id = map.id;
@@ -79,20 +32,13 @@ Map.prototype.initializeDOM = function() {
   var self = this;
 
   if (['create', 'edit'].indexOf(this.type) !== -1) {
-    // Backspace removes selected table in create/edit modes.
-    $(window).on('keyup', function(e) {
-      var kc = e.keyCode || e.which;
-      if (kc === 8) {
-        self.deleteSelected();
-        e.preventDefault();
-      }
-    });
-
+    this.registerKeys();
 
     this.creating = true;
     var $table;
 
     // Drawing.
+    // TODO: refactor & split into a Draw class.
     this.$container.on('mousedown', function(e) {
 
       $table = $('<div></div>').addClass('table');
@@ -196,6 +142,18 @@ Map.prototype.initializeDOM = function() {
   // Save the configuration.
   $('.save').click(function() {
     self.save();
+  });
+};
+
+Map.prototype.registerKeys = function() {
+  var self = this;
+  // Backspace removes selected table in create/edit modes.
+  $(window).on('keyup', function(e) {
+    var kc = e.keyCode || e.which;
+    if (kc === 8) {
+      self.deleteSelected();
+      e.preventDefault();
+    }
   });
 };
 

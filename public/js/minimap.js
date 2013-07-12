@@ -247,6 +247,8 @@ Minimap.prototype.calculate = function(width, height) {
 
 Minimap.prototype.recalculate = Minimap.prototype.calculate;
 
+// Should be called when you know new elements are going to be added.
+// It's too expensive to call on timeout to detect new elements.
 Minimap.prototype.regenerate = function() {
   this.remove();
   this.recalculate(this.options.width, this.options.height);
